@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REFLORA-PB | Ficha de Requisitos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-green: #15803d;
+            --light-green: #f0fdf4;
+            --border-color: #e5e7eb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --bg-gray: #f9fafb;
+            --warning-bg: #fefce8;
+            --warning-border: #fef08a;
+            --warning-text: #854d0e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--bg-gray);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            /* Trava o scroll global */
+        }
+
+        /* Header */
+        .main-header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 20;
+            /* Elevado para ficar acima de tudo */
+            position: relative;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-box {
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 20px;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-area h1 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .logo-area p {
+            margin: 0;
+            font-size: 10px;
+            opacity: 0.8;
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-actions button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-actions button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Container Principal */
+        .app-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Sidebar Overlay (Mobile) */
+        .sidebar-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            overflow-y: auto;
+            z-index: 15;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-close-btn {
+            display: none;
+            width: 100%;
+            text-align: right;
+            padding: 0 24px 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .nav-item {
+            width: 100%;
+            text-align: left;
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #4b5563;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-item:hover {
+            background: var(--light-green);
+            color: var(--primary-green);
+        }
+
+        .nav-item.active {
+            background: var(--light-green);
+            color: var(--primary-green);
+            font-weight: 600;
+            border-left: 4px solid var(--primary-green);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            /* Evita esticar o card */
+        }
+
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            padding: 32px;
+            flex: 1;
+        }
+
+        .tab-content h3 {
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: #111827;
+            font-size: 18px;
+            border-bottom: 1px solid #f3f4f6;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            background: white;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        .checkbox-item input {
+            width: auto;
+        }
+
+        .alert-box {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-box h4 {
+            margin: 0 0 8px 0;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--warning-text);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Footer do Card */
+        .card-footer {
+            padding: 16px 32px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-next {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .page-info {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .form-footer-hint {
+            text-align: center;
+            font-size: 11px;
+            color: #94a3b8;
+            font-style: italic;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* =========================================
+           MEDIA QUERIES - RESPONSIVIDADE MOBILE
+           ========================================= */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .main-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .header-left {
+                justify-content: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .header-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Off-Canvas Sidebar */
+            .sidebar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                transform: translateX(-100%);
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .mobile-close-btn {
+                display: block;
+            }
+
+            /* Ajustes de Conteúdo */
+            .content-area {
+                padding: 16px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .grid-2,
+            .checkbox-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-footer {
+                flex-direction: column-reverse;
+                gap: 15px;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .btn-next,
+            .btn-text {
+                width: 100%;
+                padding: 14px;
+            }
+
+            .page-info {
+                margin-bottom: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="main-header">
+        <div class="header-left">
+            <button class="mobile-menu-btn" onclick="toggleMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="logo-area">
+                <div class="icon-box"><i class="fa-solid fa-leaf"></i></div>
+                <div>
+                    <h1>REFLORA-PB</h1>
+                    <p>FICHA DE REQUISITOS EM TEMPO REAL</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <button onclick="copyToClipboard()"><i class="fa-regular fa-copy"></i> Copiar Relatório</button>
+            <button class="btn-send" onclick="sendToSheet()"><i class="fa-solid fa-cloud-arrow-up"></i> Enviar
+                Planilha</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+
+        <div class="sidebar-overlay" onclick="toggleMenu()"></div>
+
+        <aside class="sidebar" id="sidebar">
+            <button class="mobile-close-btn" onclick="toggleMenu()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <nav id="sidebar-nav">
+                <button class="nav-item active" onclick="showTab(1)"><i class="fa-solid fa-users"></i> Dados
+                    Reunião</button>
+                <button class="nav-item" onclick="showTab(2)"><i class="fa-solid fa-triangle-exclamation"></i> Dores e
+                    Métricas</button>
+                <button class="nav-item" onclick="showTab(3)"><i class="fa-solid fa-file-lines"></i> Fluxo
+                    Atual</button>
+                <button class="nav-item" onclick="showTab(4)"><i class="fa-solid fa-circle-check"></i> Fluxo
+                    Alvo</button>
+                <button class="nav-item" onclick="showTab(5)"><i class="fa-solid fa-database"></i> Documentos</button>
+                <button class="nav-item" onclick="showTab(6)"><i class="fa-solid fa-boxes-stacked"></i>
+                    Catálogo/Estoque</button>
+                <button class="nav-item" onclick="showTab(7)"><i class="fa-solid fa-map-location-dot"></i>
+                    Mapa/Evidências</button>
+                <button class="nav-item" onclick="showTab(8)"><i class="fa-solid fa-clipboard-list"></i>
+                    MVP/Ações</button>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <div style="width: 100%; max-width: 800px;">
+                <form id="requirementsForm" class="card">
+
+                    <div class="tab-content" id="tab1">
+                        <h3>1. Dados da Reunião</h3>
+                        <div class="input-group">
+                            <label>Órgão/Equipe</label>
+                            <input type="text" name="orgao" class="save-local">
+                        </div>
+                        <div class="input-group">
+                            <label>Cidade/Região</label>
+                            <input type="text" name="cidade" class="save-local">
+                        </div>
+                        <div class="input-group">
+                            <label>Participantes (Nome + Setor)</label>
+                            <textarea name="participantes" class="save-local"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="tab-content hidden" id="tab2">
+                        <h3>2. Dores e Indicadores</h3>
+                        <div class="input-group">
+                            <label>O que é mais difícil provar/medir hoje?</label>
+                            <textarea name="dificuldade_medicao" class="save-local"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>Quais indicadores já usam? (mudas, ha, espécies...)</label>
+                            <textarea name="indicadores_atuais" class="save-local"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>Em quais momentos falta informação?</label>
+                            <textarea name="falta_informacao" class="save-local"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="tab-content hidden" id="tab3">
+                        <h3>3. Fluxo Atual (Gargalos)</h3>
+                        <div class="input-group">
+                            <label>Como o viveiro informa estoque hoje?</label>
+                            <input type="text" name="estoque_atual" class="save-local">
+                        </div>
+                        <div class="input-group">
+                            <label>Como o agricultor solicita hoje?</label>
+                            <input type="text" name="solicitacao_atual" class="save-local">
+                        </div>
+                        <div class="input-group">
+                            <label>Como a SEMAS aprova hoje?</label>
+                            <input type="text" name="aprovacao_atual" class="save-local">
+                        </div>
+                        <div class="input-group">
+                            <label>Como registram plantio/resultado hoje?</label>
+                            <textarea name="registro_atual" class="save-local"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>Principais gargalos/atrasos:</label>
+                            <textarea name="gargalos" class="save-local" placeholder="Onde o processo para?"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="tab-content hidden" id="tab4">
+                        <h3>4. Fluxo Alvo (Validação)</h3>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item"><input type="checkbox" name="f_solicitacao" class="save-local">
+                                Solicitação (Catálogo + Pedido)</label>
+                            <label class="checkbox-item"><input type="checkbox" name="f_triagem" class="save-local">
+                                Avaliação/Triagem Técnica</label>
+                            <label class="checkbox-item"><input type="checkbox" name="f_agendamento" class="save-local">
+                                Agendamento de Retirada</label>
+                            <label class="checkbox-item"><input type="checkbox" name="f_recebimento" class="save-local">
+                                Comprovante de Recebimento</label>
+                            <label class="checkbox-item"><input type="checkbox" name="f_plantio" class="save-local">
+                                Registro de Plantio (Foto)</label>
+                        </div>
+                        <div class="input-group">
+                            <label>Quem aprova os pedidos?</label>
+                            <input type="text" name="quem_aprova" class="save-local"
+                                placeholder="Ex: Técnico da SEMAS, Coordenador...">
+                        </div>
+                        <div class="input-group">
+                            <label>Nível de detalhe GPS (Ponto/Polígono)</label>
+                            <input type="text" name="detalhe_gps" class="save-local"
+                                placeholder="Ex: Apenas ponto da sede, Delimitação da área...">
+                        </div>
+                        <div class="input-group">
+                            <label>Observações de mudanças necessárias:</label>
+                            <textarea name="obs_mudancas" class="save-local"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="tab-content hidden" id="tab5">
+                        <h3>5. Regras e Documentos</h3>
+                        <div class="input-group">
+                            <label>Quais documentos são obrigatórios?</label>
+                            <input type="text" name="docs_obrigatorios" class="save-local"
+                                placeholder="DAP, CAF, RG, CPF...">
+                        </div>
+                        <div class="input-group">
+                            <label>Perfis de Beneficiários</label>
+                            <input type="text" name="perfis_beneficiarios" class="save-local"
+                                placeholder="Agricultor Familiar, Escola, Associação, Empresa...">
+                        </div>
+                        <div class="input-group">
+                            <label>Restrições/Limites (Qtd por CPF/Área)</label>
+                            <textarea name="restricoes_limites" class="save-local"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="tab-content hidden" id="tab6">
+                        <h3>6. Catálogo e Estoque</h3>
+                        <div class="input-group">
+                            <label>Campos mínimos do estoque</label>
+                            <input type="text" name="campos_estoque" class="save-local"
+                                placeholder="Espécie, quantidade, idade, status, lote...">
+                        </div>
+                        <div class="grid-2">
+                            <div class="input-group">
+                                <label>Precisa rastreio por lote?</label>
+                                <input type="text" name="rastreio_lote" class="save-local">
+                            </div>
+                            <div class="input-group">
+                                <label>Como comprovar saída?</label>
+                                <input type="text" name="comprovar_saida" class="save-local"
+                                    placeholder="QR Code, Assinatura Digital, Foto do Termo...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content hidden" id="tab7">
+                        <h3>7. Mapa e Evidências</h3>
+                        <div class="input-group">
+                            <label>Camadas do Mapa (APP, RL, Bacias, etc)</label>
+                            <input type="text" name="camadas_mapa" class="save-local">
+                        </div>
+                        <div class="input-group">
+                            <label>O que aceitam como Evidência de Resultado?</label>
+                            <input type="text" name="evidencia_resultado" class="save-local"
+                                placeholder="Foto georreferenciada, Vídeo, Visita técnica, Laudo...">
+                        </div>
+                        <div class="input-group">
+                            <label>Frequência de Monitoramento</label>
+                            <input type="text" name="freq_monitoramento" class="save-local"
+                                placeholder="Ex: 30, 90, 180 dias após plantio">
+                        </div>
+                    </div>
+
+                    <div class="tab-content hidden" id="tab8">
+                        <h3>8. MVP e Próximos Passos</h3>
+                        <div class="alert-box">
+                            <h4><i class="fa-solid fa-circle-info"></i> FOCO NO ESSENCIAL PARA O LANÇAMENTO</h4>
+                            <label style="display:block; font-size: 13px; font-weight: 500; margin-bottom: 8px;">O que
+                                deve estar pronto em 30-60 dias?</label>
+                            <textarea name="mvp_prioridade" class="save-local" style="height: 80px;"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>Decisões tomadas na reunião</label>
+                            <textarea name="decisoes_reuniao" class="save-local"></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label>Ações e Responsáveis</label>
+                            <textarea name="acoes_responsaveis" class="save-local"></textarea>
+                        </div>
+                    </div>
+
+                    <footer class="card-footer">
+                        <button type="button" onclick="prevTab()" class="btn-text">Anterior</button>
+                        <span id="page-indicator" class="page-info">SEÇÃO 1 / 8</span>
+                        <button type="button" onclick="nextTab()" class="btn-next">Próxima</button>
+                    </footer>
+                </form>
+                <div class="form-footer-hint">Interface otimizada para levantamento presencial de requisitos técnicos.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymEMUJy9NCOtXCATt-md2qWOTByDSW5aygLSn7hwYnwYp144yudqU7gtv3_fS03KbpPg/exec";
+        let currentTab = 1;
+
+        // Função de controle do Menu Off-Canvas Mobile
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.sidebar-overlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        function showTab(n) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+
+            const target = document.getElementById(`tab${n}`);
+            if (target) {
+                target.classList.remove('hidden');
+                const sidebarButtons = document.querySelectorAll('.nav-item');
+                sidebarButtons[n - 1].classList.add('active');
+                currentTab = n;
+                document.getElementById('page-indicator').innerText = `SEÇÃO ${n} / 8`;
+
+                const nextBtn = document.querySelector('.btn-next');
+                nextBtn.innerText = (n === 8) ? "Finalizar" : "Próxima";
+
+                // Fecha o menu automaticamente no mobile após a seleção
+                if (window.innerWidth <= 768) {
+                    document.getElementById('sidebar').classList.remove('active');
+                    document.querySelector('.sidebar-overlay').classList.remove('active');
+                }
+
+                // Retorna o scroll para o topo do formulário ao trocar de aba
+                document.querySelector('.content-area').scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function nextTab() { if (currentTab < 8) showTab(currentTab + 1); }
+        function prevTab() { if (currentTab > 1) showTab(currentTab - 1); }
+
+        document.querySelectorAll('.save-local').forEach(el => {
+            el.addEventListener('input', () => {
+                const form = document.getElementById('requirementsForm');
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+
+                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    data[cb.name] = cb.checked;
+                });
+
+                localStorage.setItem('reflora_data', JSON.stringify(data));
+            });
+        });
+
+        window.onload = () => {
+            const saved = localStorage.getItem('reflora_data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.keys(data).forEach(key => {
+                    const inputs = document.getElementsByName(key);
+                    if (inputs.length > 0) {
+                        const input = inputs[0];
+                        if (input.type === 'checkbox') {
+                            input.checked = data[key];
+                        } else {
+                            input.value = data[key];
+                        }
+                    }
+                });
+            }
+        };
+
+        async function sendToSheet() {
+            const btn = document.querySelector('.btn-send');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+            btn.disabled = true;
+
+            const form = document.getElementById('requirementsForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            data.timestamp = new Date().toLocaleString('pt-BR');
+
+            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                data[cb.name] = cb.checked ? "Sim" : "Não";
+            });
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                alert("✅ Dados processados e salvos na planilha!");
+            } catch (e) {
+                alert("❌ Erro de rede ao comunicar com o Google.");
+                console.error(e);
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Enviar Planilha';
+                btn.disabled = false;
+            }
+        }
+
+        function copyToClipboard() {
+            const saved = localStorage.getItem('reflora_data');
+            if (!saved) {
+                alert("Nenhum dado preenchido para copiar.");
+                return;
+            }
+            navigator.clipboard.writeText(saved);
+            alert("Relatório (JSON) copiado para a área de transferência!");
+        }
+    </script>
+</body>
+
+</html>
